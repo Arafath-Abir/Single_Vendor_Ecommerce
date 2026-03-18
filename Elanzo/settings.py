@@ -38,10 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shop',
-    # 'allauth',
-    # 'allauth.account'
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 MIDDLEWARE = [
@@ -51,8 +59,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'allauth.account.middleware.AccountMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'Elanzo.urls'
@@ -60,7 +67,7 @@ ROOT_URLCONF = 'Elanzo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,17 +130,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_FILES_DIRS = ['static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL ='/media/'
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-LOGIN_URL = ''
-LOGIN_REDIRECT_URL  = ''
-LOGOUT_REDIRECT_URL = ''
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL  = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
-# SOCIALACCOUNT_LOGIN_ON_GET = True
-# ACCOUNT_SESSION_REMEMBER = True
-# ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 # SSL COMMERZE Payment setup
 SSL_COMMERZE_STORE_ID = 'malla69a7e7f039e2f'
