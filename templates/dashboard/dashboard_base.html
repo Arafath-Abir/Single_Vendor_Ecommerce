@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Seller Dashboard | Mallava{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-logo">
+                <a href="{% url 'home' %}">MALLAVA</a>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{% url 'seller_dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'seller_dashboard' %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'manage_products' %}" class="sidebar-item {% if 'product' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-box"></i>
+                    <span>Manage Products</span>
+                </a>
+                <a href="{% url 'manage_categories' %}" class="sidebar-item {% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-tags"></i>
+                    <span>Manage Categories</span>
+                </a>
+                <a href="{% url 'manage_orders' %}" class="sidebar-item {% if request.resolver_match.url_name == 'manage_orders' %}active{% endif %}">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Orders List</span>
+                </a>
+                <a href="{% url 'home' %}" class="sidebar-item">
+                    <i class="fas fa-store"></i>
+                    <span>Back to Shop</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{% url 'logout' %}" class="sidebar-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search orders, products..." class="search-input">
+                </div>
+                
+                <div class="header-user">
+                    <div class="user-info">
+                        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                        <span class="user-role">Premium Seller</span>
+                    </div>
+                    <div class="user-avatar text-uppercase">
+                        {{ user.username|slice:":1" }}
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Specific Content -->
+            <div class="dashboard-content">
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'javascript/base.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

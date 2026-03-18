@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Register | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<div class="auth-page-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Join Mallava to start shopping</p>
+        </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text|safe }}</span>
+                    {% endif %}
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-auth">Sign Up</button>
+            <div style="text-align: center; margin: 15px 0; color: #777;">OR</div>
+            <a href="{% provider_login_url 'google' %}" class="btn-auth btn-google" style="background-color: white; color: #444; border: 1px solid #ddd; display: flex; justify-content: center; align-items: center; gap: 10px; text-decoration: none;">
+                <i class="fab fa-google" style="color: #DB4437; font-size: 1.2rem;"></i>
+                Sign up with Google
+            </a>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Log In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

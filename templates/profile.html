@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+<div class="profile-layout">
+    <!-- Profile Sidebar -->
+    <aside class="profile-sidebar">
+        <div class="profile-avatar">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <h2 class="profile-name">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</h2>
+        <p class="profile-email">{{ user.email }}</p>
+        
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ total_orders }}</span>
+                <span class="stat-label">Orders</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ running_orders|length }}</span>
+                <span class="stat-label">Active</span>
+            </div>
+        </div>
+
+        <a href="{% url 'edit_profile' %}" class="btn-edit-profile">Edit Profile</a>
+        <a href="{% url 'change_password' %}" class="btn-edit-profile" style="margin-top: 1rem; background: var(--light-color); color: var(--secondary-color); border-color: #ddd;">Change Password</a>
+    </aside>
+
+    <!-- Profile Content -->
+    <div class="profile-content">
+        <!-- Active Orders -->
+        <div class="content-section">
+            <h2 class="section-title">Active Orders</h2>
+            {% if running_orders %}
+                <div class="order-list">
+                    {% for order in running_orders %}
+                        <div class="order-card">
+                            <div class="order-info">
+                                <span class="order-id">Order #{{ order.id }}</span>
+                                <span class="order-date">{{ order.created_at|date:"M d, Y H:i" }}</span>
+                                <span class="order-total">Total: ৳{{ order.get_total_cost|floatformat:0 }}</span>
+                            </div>
+                            <div class="order-actions">
+                                <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                                <a href="{% url 'order_detail' order.id %}" class="btn-view-order">View Details</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="profile-empty">
+                    <i class="fas fa-box-open"></i>
+                    <p>You have no active orders currently.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Order History -->
+        <div class="content-section">
+            <h2 class="section-title">Order History</h2>
+            {% if order_history %}
+                <div class="order-list">
+                    {% for order in order_history %}
+                        <div class="order-card">
+                            <div class="order-info">
+                                <span class="order-id">Order #{{ order.id }}</span>
+                                <span class="order-date">{{ order.created_at|date:"M d, Y" }}</span>
+                                <span class="order-total">Total: ৳{{ order.get_total_cost|floatformat:0 }}</span>
+                            </div>
+                            <div class="order-actions">
+                                <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                                <a href="{% url 'order_detail' order.id %}" class="btn-view-order">View Details</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="profile-empty">
+                    <i class="fas fa-history"></i>
+                    <p>No past orders found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

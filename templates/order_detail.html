@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+<div class="content-section" style="max-width: 900px; margin: 2rem auto;">
+    <div class="order-detail-header">
+        <div>
+            <h3>Order #{{ order.id }}</h3>
+            <p style="color: var(--secondary-color); margin-top: 0.5rem; font-size: 0.95rem;">Placed on {{ order.created_at|date:"F d, Y at H:i" }}</p>
+        </div>
+        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+
+    <table class="order-items-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th style="text-align: right;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.order_items.all %}
+                <tr>
+                    <td>
+                        <div class="item-name">{{ item.product.name }}</div>
+                        {% if order.status == 'delivered' %}
+                            <a href="{% url 'product_detail' item.product.slug %}" style="font-size: 0.85rem; margin-top: 0.5rem; display: inline-block;">Rate Product</a>
+                        {% endif %}
+                    </td>
+                    <td>৳{{ item.price|floatformat:0 }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td align="right" class="item-total">৳{{ item.get_cost|floatformat:0 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="order-summary-box">
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span>৳{{ order.get_total_cost|floatformat:0 }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Shipping</span>
+            <span>৳0</span>
+        </div>
+        <div class="summary-row summary-total">
+            <span>Total</span>
+            <span>৳{{ order.get_total_cost|floatformat:0 }}</span>
+        </div>
+
+        <div class="shipping-info">
+            <h4 style="color: var(--dark-color); margin-bottom: 0.5rem;">Shipping Address</h4>
+            <strong>{{ order.first_name }} {{ order.last_name }}</strong><br>
+            {{ order.address }}<br>
+            {{ order.city }}, {{ order.postal_code }}<br>
+            Phone: {{ order.phone }}<br>
+            Email: {{ order.email }}
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{% url 'profile' %}" class="btn-view-order"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mallava | Online Shop{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="logo">MALLAVA</a>
+            
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'product_list' %}">Shop</a>
+                <a href="#">Categories</a>
+                <a href="#">About</a>
+                
+                <a href="{% url 'cart_detail' %}" class="nav-icon cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_item_count|default:0 }}</span>
+                </a>
+                
+                {% if user.is_authenticated %}
+                    <div class="user-dropdown">
+                        <a href="{% url 'profile' %}" class="nav-icon"><i class="fas fa-user-circle"></i></a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">Hey, {{ user.first_name|default:user.username }}</div>
+                            <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-id-badge"></i> My Profile</a>
+                            <a href="{% url 'edit_profile' %}" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                            {% if user.is_staff %}
+                                <a href="{% url 'seller_dashboard' %}" class="dropdown-item text-primary"><i class="fas fa-chart-line"></i> Seller Dashboard</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'logout' %}" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-auth">Login</a>
+                    <a href="{% url 'register' %}" class="nav-auth" style="background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color);">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>MALLAVA</h2>
+                <p>Welcome to Mallava, your ultimate destination for premium quality products. We believe in providing the best shopping experience with unmatched customer service.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'product_list' %}">Shop All Products</a></li>
+                    <li><a href="{% url 'cart_detail' %}">View Cart</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">Shipping Information</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Conditions</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section footer-newsletter">
+                <h3>Stay in the Loop</h3>
+                <p>Subscribe to our newsletter for exclusive deals, new arrivals, and special promotions directly in your inbox.</p>
+                <form class="newsletter-form" action="#" method="get">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Mallava | Built with Quality & Care. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="{% static 'javascript/base.js' %}"></script>
+</body>
+</html>

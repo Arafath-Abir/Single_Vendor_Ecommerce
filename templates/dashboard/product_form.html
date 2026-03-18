@@ -1,0 +1,132 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}{{ title }} | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>{{ title }}</span>
+    <a href="{% url 'manage_products' %}" class="btn-dashboard btn-outline-dash">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="dashboard-form-container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+            <div class="form-group full-width">
+                <label for="{{ form.name.id_for_label }}">Product Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="error-msg">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Category</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="error-msg">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.price.id_for_label }}">Price (৳)</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                    <div class="error-msg">{{ form.price.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.stock.id_for_label }}">Stock Quantity</label>
+                {{ form.stock }}
+                {% if form.stock.errors %}
+                    <div class="error-msg">{{ form.stock.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.available.id_for_label }}">Is Available?</label>
+                <div class="checkbox-wrapper">
+                    {{ form.available }}
+                    <span>Mark as active for customers</span>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.description.id_for_label }}">Product Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="error-msg">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}">Product Image (Upload)</label>
+                <div class="file-input-wrapper">
+                    {{ form.image }}
+                </div>
+                {% if form.image.errors %}
+                    <div class="error-msg">{{ form.image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.image_url.id_for_label }}">Product Image (URL)</label>
+                {{ form.image_url }}
+                <small class="help-text">Use either upload or URL, not both.</small>
+                {% if form.image_url.errors %}
+                    <div class="error-msg">{{ form.image_url.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-dashboard btn-primary-dash">
+                <i class="fas fa-save"></i> Save Product
+            </button>
+            <a href="{% url 'manage_products' %}" class="btn-dashboard btn-outline-dash">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    .full-width { grid-column: 1 / -1; }
+    
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        outline: none;
+    }
+    
+    .form-group textarea { min-height: 120px; }
+    
+    .checkbox-wrapper { display: flex; align-items: center; gap: 0.5rem; }
+    .checkbox-wrapper input { width: auto; }
+    
+    .error-msg { color: var(--danger-color); font-size: 0.85rem; margin-top: 0.25rem; font-weight: 600; }
+    .help-text { color: var(--secondary-color); font-size: 0.8rem; display: block; margin-top: 0.25rem; }
+    
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}Manage Products | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>Manage Inventory</span>
+    <a href="{% url 'add_product' %}" class="btn-dashboard btn-primary-dash">
+        <i class="fas fa-plus"></i> Add New Product
+    </a>
+</div>
+
+<div class="table-container">
+    <div class="table-header">
+        <h3>Product List ({{ products|length }})</h3>
+        <div class="header-tools">
+            <input type="text" placeholder="Filter products..." class="search-input" style="max-width: 250px; font-size: 0.9rem;">
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td style="width: 80px;">
+                    <img src="{{ product.get_image_url }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: var(--dark-color);">{{ product.name }}</div>
+                    <small style="color: var(--secondary-color);">Slug: {{ product.slug }}</small>
+                </td>
+                <td>{{ product.category.name }}</td>
+                <td>৳{{ product.price|floatformat:0 }}</td>
+                <td>
+                    <span class="{% if product.stock <= 5 %}low-stock{% endif %}">
+                        {{ product.stock }}
+                    </span>
+                </td>
+                <td>
+                    {% if product.available %}
+                        <span class="badge-status status-delivered">Active</span>
+                    {% else %}
+                        <span class="badge-status status-canceled">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="actions-cell">
+                        <a href="{% url 'edit_product' product.id %}" class="btn-icon btn-edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_product' product.id %}" class="btn-icon btn-delete" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No products found. Add your first product now!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .text-center { text-align: center; padding: 3rem !important; color: var(--secondary-color); font-size: 1.1rem; }
+</style>
+{% endblock %}

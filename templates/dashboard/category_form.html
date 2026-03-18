@@ -1,0 +1,89 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}{{ title }} | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>{{ title }}</span>
+    <a href="{% url 'manage_categories' %}" class="btn-dashboard btn-outline-dash">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="dashboard-form-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="{{ form.name.id_for_label }}">Category Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="error-msg">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.slug.id_for_label }}">Slug</label>
+                {{ form.slug }}
+                <small class="help-text">The slug is used in the URL. Leaving it blank will auto-generate one from the name.</small>
+                {% if form.slug.errors %}
+                    <div class="error-msg">{{ form.slug.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="error-msg">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-dashboard btn-primary-dash">
+                <i class="fas fa-save"></i> Save Category
+            </button>
+            <a href="{% url 'manage_categories' %}" class="btn-dashboard btn-outline-dash">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .full-width { grid-column: 1 / -1; }
+    
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        outline: none;
+    }
+    
+    .form-group textarea { min-height: 100px; }
+    
+    .error-msg { color: var(--danger-color); font-size: 0.85rem; margin-top: 0.25rem; font-weight: 600; }
+    .help-text { color: var(--secondary-color); font-size: 0.8rem; display: block; margin-top: 0.25rem; }
+    
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}

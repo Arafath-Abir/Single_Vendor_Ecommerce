@@ -1,0 +1,59 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}Manage Categories | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>Manage Categories</span>
+    <a href="{% url 'add_category' %}" class="btn-dashboard btn-primary-dash">
+        <i class="fas fa-plus"></i> Add New Category
+    </a>
+</div>
+
+<div class="table-container">
+    <div class="table-header">
+        <h3>Category List ({{ categories|length }})</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category Name</th>
+                <th>Slug</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>#{{ category.id }}</td>
+                <td>
+                    <div style="font-weight: 600; color: var(--dark-color);">{{ category.name }}</div>
+                </td>
+                <td>{{ category.slug }}</td>
+                <td>{{ category.description|truncatechars:50|default:"No description" }}</td>
+                <td>
+                    <div class="actions-cell">
+                        <a href="{% url 'edit_category' category.id %}" class="btn-icon btn-edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_category' category.id %}" class="btn-icon btn-delete" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No categories found. Create your first category now!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .text-center { text-align: center; padding: 3rem !important; color: var(--secondary-color); font-size: 1.1rem; }
+</style>
+{% endblock %}

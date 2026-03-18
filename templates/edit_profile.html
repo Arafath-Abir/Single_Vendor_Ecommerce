@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<div class="auth-container" style="max-width: 600px; margin: 3rem auto; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-radius: 16px;">
+    <div class="auth-header">
+        <h2 style="color: var(--dark-color);">Edit Profile</h2>
+        <p>Update your personal information</p>
+    </div>
+    
+    <form method="post" action="{% url 'edit_profile' %}" class="auth-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" class="form-control" required>
+        </div>
+        
+        <button type="submit" class="auth-btn" style="background: var(--primary-color);">Save Changes</button>
+        
+        <div class="auth-links" style="margin-top: 1.5rem; text-align: center;">
+            <a href="{% url 'profile' %}" style="color: var(--secondary-color); font-weight: 600;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

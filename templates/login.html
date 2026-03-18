@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Login | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<div class="auth-page-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Login to your Mallava account</p>
+        </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+
+            <button type="submit" class="btn-auth">Login</button>
+            <div style="text-align: center; margin: 15px 0; color: #777;">OR</div>
+            <a href="{% provider_login_url 'google' %}" class="btn-auth btn-google" style="background-color: white; color: #444; border: 1px solid #ddd; display: flex; justify-content: center; align-items: center; gap: 10px; text-decoration: none;">
+                <i class="fab fa-google" style="color: #DB4437; font-size: 1.2rem;"></i>
+                Login with Google
+            </a>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

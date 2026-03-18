@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+
+<div class="checkout-page-container">
+    <div class="checkout-header">
+        <h1>Checkout</h1>
+        <p>Complete your order by providing your shipping details</p>
+    </div>
+
+    <div class="checkout-layout">
+        <div class="checkout-form-section">
+            <h2>Shipping Information</h2>
+            <form method="post" id="checkout-form">
+                {% csrf_token %}
+                <div class="checkout-form">
+                    {% for field in form %}
+                        <div class="form-group {% if field.name == 'address' or field.name == 'notes' %}full-width{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <span class="helptext">{{ field.help_text|safe }}</span>
+                            {% endif %}
+                            {% if field.errors %}
+                                <ul class="errorlist">
+                                    {% for error in field.errors %}
+                                        <li><i class="fas fa-exclamation-circle"></i> {{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+
+        <div class="checkout-summary-section">
+            <h2>Your Order</h2>
+            
+            <div class="summary-items">
+                {% for item in cart.items.all %}
+                <div class="summary-item">
+                    <div class="item-info">
+                        {% if item.product.get_image_url %}
+                            <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}" class="item-img">
+                        {% else %}
+                            <div class="item-img" style="display:flex; align-items:center; justify-content:center; color:#aaa; font-size:0.6rem;">No Img</div>
+                        {% endif %}
+                        <div class="item-text">
+                            <h4>{{ item.product.name|truncatechars:30 }}</h4>
+                            <p>Qty: {{ item.quantity }} x ৳{{ item.product.price }}</p>
+                        </div>
+                    </div>
+                    <div class="item-price-calc">
+                        ৳{{ item.get_cost }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="summary-totals">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span>৳{{ cart.get_total_cost }}</span>
+                </div>
+                <div class="total-row">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>Total</span>
+                    <span>৳{{ cart.get_total_cost }}</span>
+                </div>
+            </div>
+
+            <button type="submit" form="checkout-form" class="btn-place-order">Proceed to Payment <i class="fas fa-arrow-right"></i></button>
+            <div class="secure-notice">
+                <i class="fas fa-lock"></i> Secure SSL Checkout
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

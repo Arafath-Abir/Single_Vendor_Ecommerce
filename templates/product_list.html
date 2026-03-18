@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Products | Mallava{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/product_list.css' %}">
+
+<div class="product-page-layout">
+    <!-- Sidebar Filters -->
+    <aside class="filters-sidebar">
+        <h3>Filters</h3>
+        <form method="get" action="{% if category %}{% url 'product_list_by_category' category.slug %}{% else %}{% url 'product_list' %}{% endif %}">
+            
+            <div class="filter-group">
+                <h4>Search</h4>
+                <div class="search-box">
+                    <input type="text" name="search" placeholder="Search products..." value="{{ request.GET.search|default:'' }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h4>Categories</h4>
+                <ul class="category-list">
+                    <li>
+                        <a href="{% url 'product_list' %}" class="{% if not category %}active{% endif %}">All Categories</a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{% url 'product_list_by_category' cat.slug %}" class="{% if category and category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="filter-group">
+                <h4>Price Range (৳)</h4>
+                <div class="price-inputs">
+                    <input type="number" name="min_price" placeholder="Min" value="{{ request.GET.min_price|default:'' }}">
+                    <span>-</span>
+                    <input type="number" name="max_price" placeholder="Max" value="{{ request.GET.max_price|default:'' }}">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h4>Minimum Rating</h4>
+                <div class="search-box">
+                    <input type="number" name="rating" placeholder="1 to 5" min="1" max="5" value="{{ request.GET.rating|default:'' }}">
+                </div>
+            </div>
+
+            <button type="submit" class="apply-filters-btn">Apply Filters</button>
+            <a href="{% url 'product_list' %}" class="clear-filters">Clear All</a>
+        </form>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="product-main-content">
+        <header class="content-header">
+            <h2>{% if category %}{{ category.name }}{% else %}All Products{% endif %}</h2>
+            <span class="product-count">Showing {{ products|length }} results</span>
+        </header>
+
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <a href="{% url 'product_detail' product.slug %}" class="product-link">
+                    <div class="product-image-container">
+                        {% if product.get_image_url %}
+                            <img src="{{ product.get_image_url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="no-image-placeholder">No Image</div>
+                        {% endif %}
+                        <div class="product-overlay-action">
+                            <span class="btn-quick-view"><i class="fas fa-eye"></i> Quick View</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="product-info">
+                    <span class="product-category-label">{{ product.category.name }}</span>
+                    <a href="{% url 'product_detail' product.slug %}" class="product-title">{{ product.name|truncatechars:45 }}</a>
+                    <div class="rating-stars" style="margin-bottom: 0.5rem; font-size: 0.85rem;">
+                        <i class="fas fa-star" style="color:#ffc107"></i>
+                        <span>{{ product.average_rating|default:"0.0"|floatformat:1 }}</span>
+                    </div>
+                    <div class="product-price">৳{{ product.price|floatformat:0 }}</div>
+                    <form action="{% url 'cart_add' product.id %}" method="post" class="add-to-cart-form">
+                        {% csrf_token %}
+                        <button type="submit" class="add-to-cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <p>No products found matching your criteria.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
