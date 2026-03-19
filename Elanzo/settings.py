@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2odr*iracppiviz=s(-g1cz)h*^5!_6@86wo3*!#1kde$l*ng2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -88,10 +88,14 @@ WSGI_APPLICATION = 'Elanzo.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+'default': {
+'ENGINE': 'django.db.backends.postgresql',
+'NAME': 'mallava_db',
+'USER': 'postgres',
+'PASSWORD': 'admin123',
+'HOST': 'localhost',
+'PORT': '5432',
+}
 }
 
 
