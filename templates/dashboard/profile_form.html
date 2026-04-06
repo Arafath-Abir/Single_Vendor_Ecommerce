@@ -1,0 +1,81 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}{{ title }} | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>{{ title }}</span>
+    <a href="{% url 'seller_dashboard' %}" class="btn-dashboard btn-outline-dash">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="dashboard-form-container" style="max-width: 600px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <div class="form-grid">
+            <div class="form-group full-width text-center" style="margin-bottom: 2rem;">
+                {% if user.profile.profile_picture %}
+                <img src="{{ user.profile.profile_picture.url }}" alt="Current Profile" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem;">
+                {% else %}
+                <div style="width: 150px; height: 150px; border-radius: 50%; background: var(--primary-color); color: white; display:flex; align-items:center; justify-content:center; font-size: 4rem; margin: 0 auto 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+                {% endif %}
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.profile_picture.id_for_label }}">Upload New Profile Picture</label>
+                {{ form.profile_picture }}
+                {% if form.profile_picture.errors %}
+                    <div class="error-msg">{{ form.profile_picture.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-dashboard btn-primary-dash">
+                <i class="fas fa-save"></i> Save Profile Picture
+            </button>
+            <a href="{% url 'seller_dashboard' %}" class="btn-dashboard btn-outline-dash">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .full-width { grid-column: 1 / -1; }
+    .text-center { text-align: center; }
+    
+    .form-group input:not([type="checkbox"]), .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        outline: none;
+    }
+    
+    .error-msg { color: var(--danger-color); font-size: 0.85rem; margin-top: 0.25rem; font-weight: 600; }
+    
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}

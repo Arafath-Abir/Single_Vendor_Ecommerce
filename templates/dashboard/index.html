@@ -53,6 +53,29 @@
             <p>{{ low_stock }}</p>
         </div>
     </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon icon-users">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Total Users</h4>
+            <p>{{ total_users }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- New Action Buttons -->
+<div class="page-actions" style="margin: 2rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">
+    <a href="{% url 'manage_banners' %}" class="btn-dashboard btn-primary-dash">
+        <i class="fas fa-image"></i> Manage Homepage Banners
+    </a>
+    <a href="{% url 'edit_profile_pic' %}" class="btn-dashboard btn-outline-dash">
+        <i class="fas fa-user"></i> Edit Profile Picture
+    </a>
+    <a href="{% url 'add_product' %}" class="btn-dashboard btn-primary-dash">
+        <i class="fas fa-plus"></i> Add New Product
+    </a>
 </div>
 
 <div class="grid-2-1">
