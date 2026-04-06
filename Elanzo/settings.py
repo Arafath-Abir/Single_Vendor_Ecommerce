@@ -31,18 +31,19 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'shop',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'shop',
 ]
 
 SITE_ID = 1
@@ -67,7 +68,7 @@ ROOT_URLCONF = 'Elanzo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -174,3 +175,117 @@ EMAIL_HOST_PASSWORD = 'bbosvguxijnixyye'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'   
+
+UNFOLD = {
+    "SITE_TITLE": "Elanzo Admin",
+    "SITE_HEADER": "Elanzo Dashboard",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "speed",
+    "COLORS": {
+        "primary": {
+            "50": "#FFF5EC",
+            "100": "#FFE8D3",
+            "200": "#FFCFA3",
+            "300": "#FFB06B",
+            "400": "#FF8B32",
+            "500": "#ff6a00",  # Matches dashboard primary-color
+            "600": "#E65000",
+            "700": "#B33E00",
+            "800": "#802C00",
+            "900": "#521F00",
+            "950": "#2E0F00",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Shop Management",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Products",
+                        "icon": "inventory_2",
+                        "link": "/admin/shop/product/",
+                    },
+                    {
+                        "title": "Categories",
+                        "icon": "category",
+                        "link": "/admin/shop/category/",
+                    },
+                    {
+                        "title": "Orders",
+                        "icon": "shopping_cart",
+                        "link": "/admin/shop/order/",
+                    },
+                    {
+                        "title": "Order Items",
+                        "icon": "list_alt",
+                        "link": "/admin/shop/orderitem/",
+                    },
+                    {
+                        "title": "Carts",
+                        "icon": "shopping_basket",
+                        "link": "/admin/shop/cart/",
+                    },
+                    {
+                        "title": "Ratings",
+                        "icon": "star_rate",
+                        "link": "/admin/shop/rating/",
+                    },
+                ],
+            },
+            {
+                "title": "Access & Authentication",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Users",
+                        "icon": "person",
+                        "link": "/admin/auth/user/",
+                    },
+                    {
+                        "title": "Groups",
+                        "icon": "group",
+                        "link": "/admin/auth/group/",
+                    },
+                ],
+            },
+        ],
+    },
+    "TABS": [
+        {
+            "models": [
+                "shop.product",
+                "shop.category",
+            ],
+            "items": [
+                {
+                    "title": "Products",
+                    "link": "/admin/shop/product/",
+                },
+                {
+                    "title": "Categories",
+                    "link": "/admin/shop/category/",
+                },
+            ],
+        },
+    ],
+    "DASHBOARD": {
+        "navigation": [
+            {
+                "title": "Shop Analytics",
+                "link": "/admin/",
+                "icon": "dashboard",
+            },
+        ],
+        # Kept commented to prevent crashes until the view is actually created
+        # "widgets": [
+        #     {
+        #         "view": "admin.views.TotalOrdersWidget",
+        #         "title": "Total Orders",
+        #     },
+        # ],
+    },
+}
