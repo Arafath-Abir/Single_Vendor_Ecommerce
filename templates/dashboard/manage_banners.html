@@ -1,0 +1,73 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}Manage Banners | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>Manage Banners</span>
+    <a href="{% url 'add_banner' %}" class="btn-dashboard btn-primary-dash">
+        <i class="fas fa-plus"></i> Add New Banner
+    </a>
+</div>
+
+<div class="table-container">
+    <div class="table-header">
+        <h3>Homepage Banners ({{ banners|length }})</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Banner</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Order</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for banner in banners %}
+            <tr>
+                <td>
+                    {% if banner.image %}
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="height: 60px; width: 120px; object-fit: cover; border-radius: 4px;">
+                    {% else %}
+                    <div style="height: 60px; width: 120px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 4px;">No Image</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: var(--dark-color);">{{ banner.title }}</div>
+                </td>
+                <td>
+                    {% if banner.active %}
+                    <span class="badge-status status-delivered">Active</span>
+                    {% else %}
+                    <span class="badge-status status-canceled">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ banner.order }}</td>
+                <td>
+                    <div class="actions-cell">
+                        <a href="{% url 'edit_banner' banner.id %}" class="btn-icon btn-edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_banner' banner.id %}" class="btn-icon btn-delete" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No banners found. Create your first banner now!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .text-center { text-align: center; padding: 3rem !important; color: var(--secondary-color); font-size: 1.1rem; }
+    .status-delivered { background-color: #d1fae5; color: #065f46; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .status-canceled { background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+</style>
+{% endblock %}

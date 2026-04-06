@@ -150,3 +150,31 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         return (self.price * self.quantity)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(
+        upload_to='profiles/%Y/%m/%d/', 
+        blank=True, 
+        null=True,
+        default='profiles/default-avatar.jpg'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username}\'s Profile'
+
+
+class Banner(models.Model):
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='banners/%Y/%m/%d/')
+    active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return self.title

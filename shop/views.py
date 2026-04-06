@@ -1,17 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash, get_user_model
 User = get_user_model()
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import RegistrationForm, RatingForm, CheckoutForm, ProductForm, CategoryForm
+from .forms import RegistrationForm, RatingForm, CheckoutForm, ProductForm, CategoryForm, BannerForm, ProfileForm
 from . import models
-from .models import Category, Product, Rating, Cart, CartItem, Order, OrderItem
+from .models import Category, Product, Rating, Cart, CartItem, Order, OrderItem, Banner, Profile
 from django.db.models import Avg, Min, Max, Q, Sum, Count
 from . import sslcommerz
 from django.contrib.admin.views.decorators import staff_member_required
-
-
+from django.views.decorators.csrf import csrf_exempt
 # Authentication Views
 def login_view(request):
     if request.user.is_authenticated:
@@ -53,10 +53,12 @@ def home_view(request):
         Product.objects.filter(id__in=recent_ids),
         key=lambda p: recent_ids.index(p.id)
     )
+    active_banners = Banner.objects.filter(active=True).order_by('order', 'created_at')
     context = {
         'featured_products': featured_products,
         'categories': categories,
         'recently_viewed_products': recently_viewed_products,
+        'banners': active_banners,
     }
     return render(request, 'home.html', context)
 
@@ -149,12 +151,26 @@ def cart_update(request, product_id):
     cart = get_object_or_404(Cart, user=request.user)
     product = get_object_or_404(Product, id=product_id)
     cart_item = get_object_or_404(CartItem, cart=cart, product=product)
-    quantity = int(request.POST.get('quantity', 1))
-    if quantity <= 0:
-        cart_item.delete()
-    else:
-        cart_item.quantity = quantity
-        cart_item.save()
+    
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity <= 0:
+            cart_item.delete()
+            item_deleted = True
+        else:
+            cart_item.quantity = quantity
+            cart_item.save()
+            item_deleted = False
+            
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'status': 'success',
+                'item_total': cart_item.get_cost() if not item_deleted else 0,
+                'cart_total': cart.get_total_cost(),
+                'total_items': cart.get_total_items(),
+                'item_deleted': item_deleted
+            })
+            
     return redirect('cart_detail')
 
 def cart_remove(request, product_id):
@@ -197,33 +213,49 @@ def payment_process(request):
     if not order_id:
         return redirect('home')
     order = get_object_or_404(Order, id=order_id)
-    return sslcommerz.generate_ssl_commerz_payment(request, order)
+    
+    response_data = sslcommerz.generate_ssl_commerz_payment(request, order)
+    if response_data and response_data.get('status') == 'SUCCESS':
+        return redirect(response_data.get('GatewayPageURL'))
+    else:
+        messages.error(request, 'Failed to initiate payment. Please try again.')
+        return redirect('checkout')
 
-def payment_success(request):
-    order_id = request.session.get('order_id')
+@csrf_exempt
+def payment_success(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     order.paid = True
     order.status = 'processing'
-    order.transaction_id = f'TXN{order.id}{order.created_at.strftime("%Y%m%d%H%M%S")}'
+    tran_id = request.POST.get('tran_id')
+    if tran_id:
+        order.transaction_id = tran_id
+    else:
+        order.transaction_id = f'TXN{order.id}{order.created_at.strftime("%Y%m%d%H%M%S")}'
     order.save()
     for item in order.order_items.all():
         item.product.stock = max(0, item.product.stock - item.quantity)
         item.product.save()
+        
+    try:
+        sslcommerz.send_order_confirmation_email(order)
+    except Exception as e:
+        print(f"Email error: {e}")
+        
     messages.success(request, 'Payment successful!')
     return render(request, 'payment_success.html', {'order': order})
 
-def payment_fail(request):
-    order_id = request.session.get('order_id')
-    if order_id:
-        order = Order.objects.filter(id=order_id).first()
-        if order:
-            order.status = 'canceled'
-            order.save()
+@csrf_exempt
+def payment_fail(request, order_id):
+    order = Order.objects.filter(id=order_id).first()
+    if order:
+        order.status = 'canceled'
+        order.save()
     messages.error(request, 'Payment failed.')
     return redirect('home')
 
+@csrf_exempt
 def payment_cancel(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, id=order_id)
     order.status = 'canceled'
     order.save()
     messages.info(request, 'Order canceled.')
@@ -282,6 +314,7 @@ def seller_dashboard(request):
     total_revenue = Order.objects.filter(paid=True).aggregate(Sum('order_items__price'))['order_items__price__sum'] or 0
     total_orders = Order.objects.count()
     total_products = Product.objects.count()
+    total_users = User.objects.count()
     low_stock_products = Product.objects.filter(stock__lte=5)
 
     # Top Selling Products (by quantity)
@@ -304,6 +337,7 @@ def seller_dashboard(request):
         'total_revenue': total_revenue,
         'total_orders': total_orders,
         'total_products': total_products,
+        'total_users': total_users,
         'low_stock': low_stock_products.count(),
         'recent_orders': recent_orders,
         'low_stock_items': low_stock_products,
@@ -409,3 +443,79 @@ def delete_category(request, pk):
         messages.success(request, 'Category deleted successfully.')
         return redirect('manage_categories')
     return render(request, 'dashboard/confirm_delete.html', {'item': category, 'type': 'category'})
+
+
+# Banner Management Views
+@staff_member_required
+def manage_banners(request):
+    banners = Banner.objects.all().order_by('order', 'created_at')
+    return render(request, 'dashboard/manage_banners.html', {'banners': banners})
+
+
+@staff_member_required
+def add_banner(request):
+    if request.method == 'POST':
+        form = BannerForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Banner added successfully!')
+            return redirect('manage_banners')
+    else:
+        form = BannerForm()
+    return render(request, 'dashboard/banner_form.html', {
+        'form': form, 
+        'title': 'Add New Banner'
+    })
+
+
+@staff_member_required  
+def edit_banner(request, pk):
+    banner = get_object_or_404(Banner, pk=pk)
+    if request.method == 'POST':
+        form = BannerForm(request.POST, request.FILES, instance=banner)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Banner updated successfully!')
+            return redirect('manage_banners')
+    else:
+        form = BannerForm(instance=banner)
+    return render(request, 'dashboard/banner_form.html', {
+        'form': form, 
+        'title': f'Edit Banner: {banner.title}'
+    })
+
+
+@staff_member_required
+def delete_banner(request, pk):
+    banner = get_object_or_404(Banner, pk=pk)
+    if request.method == 'POST':
+        banner.delete()
+        messages.success(request, 'Banner deleted successfully.')
+        return redirect('manage_banners')
+    return render(request, 'dashboard/confirm_delete.html', {
+        'item': banner, 
+        'type': 'banner'
+    })
+
+
+# Profile Picture Management
+@login_required
+def edit_profile_pic(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+    
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile picture updated successfully!')
+            return redirect('seller_dashboard')
+    else:
+        form = ProfileForm(instance=profile)
+    
+    return render(request, 'dashboard/profile_form.html', {
+        'form': form,
+        'title': 'Update Profile Picture'
+    })

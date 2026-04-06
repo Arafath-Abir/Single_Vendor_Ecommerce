@@ -49,6 +49,15 @@ urlpatterns = [
     path('dashboard/category/add/', views.add_category, name='add_category'),
     path('dashboard/category/edit/<int:pk>/', views.edit_category, name='edit_category'),
     path('dashboard/category/delete/<int:pk>/', views.delete_category, name='delete_category'),
+    
+    # Banner management
+    path('dashboard/banners/', views.manage_banners, name='manage_banners'),
+    path('dashboard/banners/add/', views.add_banner, name='add_banner'),
+    path('dashboard/banners/edit/<int:pk>/', views.edit_banner, name='edit_banner'),
+    path('dashboard/banners/delete/<int:pk>/', views.delete_banner, name='delete_banner'),
+    
+    # Profile picture
+    path('dashboard/profile-pic/', views.edit_profile_pic, name='edit_profile_pic'),
 ]
 
 

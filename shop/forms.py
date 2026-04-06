@@ -1,5 +1,5 @@
 from django import forms
-from . models import Order, Product, Rating, Category
+from . models import Order, Product, Rating, Category, Profile, Banner
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -61,4 +61,32 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['profile_picture']
+        widgets = {
+            'profile_picture': forms.ClearableFileInput(attrs={
+                'class': 'form-control', 
+                'accept': 'image/*',
+                'style': 'padding: 0.4rem;'
+            })
+        }
+
+
+class BannerForm(forms.ModelForm):
+    class Meta:
+        model = Banner
+        fields = ['title', 'image', 'active', 'order']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'form-control', 
+                'accept': 'image/*'
+            }),
+            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
         }

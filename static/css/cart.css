@@ -101,29 +101,53 @@
     gap: 0.5rem;
 }
 
-.qty-input {
-    width: 70px;
-    padding: 0.75rem 0.5rem;
+
+.quantity-control {
+    display: flex;
+    align-items: center;
     border: 1px solid #ddd;
-    border-radius: 6px;
-    text-align: center;
-    font-size: 1.05rem;
-    font-weight: 600;
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
 }
 
-.btn-update {
-    background: #f1f3f5;
-    color: var(--dark-color);
+.qty-btn {
+    background: #f8f9fa;
     border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background 0.2s;
 }
 
-.btn-update:hover {
-    background: #dee2e6;
+.qty-btn:hover {
+    background: #e9ecef;
+}
+
+.qty-input {
+    width: 50px !important;
+    text-align: center;
+    border: none !important;
+    border-left: 1px solid #ddd !important;
+    border-right: 1px solid #ddd !important;
+    margin: 0 !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+    appearance: textfield;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.qty-input.loading {
+    opacity: 0.5;
 }
 
 .item-total {

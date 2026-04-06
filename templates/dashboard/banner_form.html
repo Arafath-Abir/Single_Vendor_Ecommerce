@@ -1,0 +1,95 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}{{ title }} | Mallava Seller{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <span>{{ title }}</span>
+    <a href="{% url 'manage_banners' %}" class="btn-dashboard btn-outline-dash">
+        <i class="fas fa-arrow-left"></i> Back to Banners
+    </a>
+</div>
+
+<div class="dashboard-form-container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="{{ form.title.id_for_label }}">Banner Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="error-msg">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.image.id_for_label }}">Banner Image</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                    <div class="error-msg">{{ form.image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem;">
+                {{ form.active }}
+                <label for="{{ form.active.id_for_label }}" style="margin:0;">Active (Display on Homepage)</label>
+                {% if form.active.errors %}
+                    <div class="error-msg">{{ form.active.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.order.id_for_label }}">Display Order</label>
+                {{ form.order }}
+                <small class="help-text">Lower numbers appear first.</small>
+                {% if form.order.errors %}
+                    <div class="error-msg">{{ form.order.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-dashboard btn-primary-dash">
+                <i class="fas fa-save"></i> Save Banner
+            </button>
+            <a href="{% url 'manage_banners' %}" class="btn-dashboard btn-outline-dash">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    .full-width { grid-column: 1 / -1; }
+    
+    .form-group input:not([type="checkbox"]), .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        outline: none;
+    }
+    
+    .error-msg { color: var(--danger-color); font-size: 0.85rem; margin-top: 0.25rem; font-weight: 600; }
+    .help-text { color: var(--secondary-color); font-size: 0.8rem; display: block; margin-top: 0.25rem; }
+    
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}

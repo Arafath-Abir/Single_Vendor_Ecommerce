@@ -142,24 +142,34 @@
     <!-- Related Products Section -->
     {% if related_products %}
     <section class="related-products-section">
-        <h2>You may also like</h2>
-        <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
-            {% for related in related_products|slice:":4" %}
-            <div class="product-card" style="border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
-                <div class="card-image">
-                    {% if related.get_image_url %}
-                        <img src="{{ related.get_image_url }}" alt="{{ related.name }}">
-                    {% else %}
-                        <div class="no-image">No Image</div>
-                    {% endif %}
-                </div>
-                <div class="card-content">
-                    <h3 class="product-title"><a href="{% url 'product_detail' related.slug %}">{{ related.name }}</a></h3>
-                    <div class="card-footer">
-                        <strong class="price">৳{{ related.price }}</strong>
+        <div class="section-header">
+            <h2 class="section-title">You may also like</h2>
+        </div>
+        <div class="products-grid">
+            {% for product in related_products|slice:":5" %}
+                <div class="product-card">
+                    <a href="{% url 'product_detail' product.slug %}" class="product-link">
+                        <div class="product-image-container">
+                            {% if product.get_image_url %}
+                                <img src="{{ product.get_image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="no-image-placeholder">No Image</div>
+                            {% endif %}
+                            <div class="product-overlay-action">
+                                <span class="btn-quick-view"><i class="fas fa-eye"></i> Quick View</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category-label">{{ product.category.name }}</span>
+                        <a href="{% url 'product_detail' product.slug %}" class="product-title">{{ product.name }}</a>
+                        <div class="product-price">৳ {{ product.price|floatformat:0 }}</div>
+                        <form action="{% url 'cart_add' product.id %}" method="post" class="add-to-cart-form">
+                            {% csrf_token %}
+                            <button type="submit" class="add-to-cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        </form>
                     </div>
                 </div>
-            </div>
             {% endfor %}
         </div>
     </section>
