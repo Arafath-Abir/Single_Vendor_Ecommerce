@@ -1,6 +1,61 @@
+# ─── Python ───────────────────────────────────────
 __pycache__/
-*.pyc
-.DS_Store
-.env
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# ─── Virtual environments ─────────────────────────
+venv/
+env/
+.venv/
+ENV/
+
+# ─── Django ───────────────────────────────────────
+*.log
+local_settings.py
 db.sqlite3
 staticfiles/
+media/
+
+# ─── Environment / Secrets ────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── IDEs & Editors ───────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Coverage & Testing ───────────────────────────
+.coverage
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# ─── Celery ───────────────────────────────────────
+celerybeat-schedule
+celerybeat.pid
+
+# ─── Docker ───────────────────────────────────────
+.dockerignore
